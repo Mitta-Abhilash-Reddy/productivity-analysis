@@ -1,0 +1,54 @@
+{
+  "name": "tracker-app",
+  "version": "2.0.0",
+  "description": "Remote Employee Productivity Monitor — Production Ready",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "build:win": "electron-builder --win",
+    "build:mac": "electron-builder --mac",
+    "build:linux": "electron-builder --linux"
+  },
+  "build": {
+    "appId": "com.company.worktracker",
+    "productName": "WorkTracker",
+    "files": [
+      "main.js",
+      "tracker.js",
+      "idle.js",
+      "mouse.js",
+      "screenshot.js",
+      "api.js",
+      "tray.js",
+      "config.js",
+      "store.js",
+      "logger.js",
+      "setup.js",
+      "setup.html",
+      "preload.js",
+      "assets/**/*",
+      "node_modules/**/*"
+    ],
+    "mac": {
+      "category": "public.app-category.productivity",
+      "target": "dmg"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "linux": {
+      "target": "AppImage"
+    }
+  },
+  "dependencies": {
+    "active-win": "^8.1.0",
+    "axios": "^1.6.0",
+    "electron-store": "^8.1.0",
+    "screenshot-desktop": "^1.12.7"
+  },
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.1"
+  }
+}
