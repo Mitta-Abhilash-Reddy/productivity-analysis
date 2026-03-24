@@ -17,12 +17,13 @@ module.exports = {
   IDLE_THRESHOLD_MS: 60_000,        // 1 minute idle threshold
 
   // ── Screenshot ────────────────────────────────────────────────────────────
-  SCREENSHOT_MIN_MS: 10 * 60_000,   // 10 minutes minimum
-  SCREENSHOT_MAX_MS: 15 * 60_000,   // 15 minutes maximum
+  SCREENSHOT_MIN_MS: 10000,   // 10 sec minimum
+  SCREENSHOT_MAX_MS: 15000,   // 15 sec maximum
 
   // ── API ───────────────────────────────────────────────────────────────────
   // Override via: API_URL=https://api.company.com/track npm start
   API_URL: process.env.API_URL || "http://localhost:3000/track",
+  // API_URL :"https://productivity-analysis.onrender.com/track",
   API_TIMEOUT_MS: 8000,
   MAX_QUEUE_SIZE: 50,
 

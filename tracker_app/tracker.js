@@ -80,12 +80,12 @@ async function collectAndSend() {
 
   // 4. App switch = user is active — reset idle timer
   if (appSwitched) resetIdleTimer();
+// 5. Check idle state
+const idleState = isIdle();
 
-  // 5. Flush aggregated mouse data (resets counters for next interval)
-  const mouseData = flushMouseData();
+// 6. Flush aggregated mouse data using idle state
+const mouseData = flushMouseData(idleState);
 
-  // 6. Check idle state after mouse flush
-  const idleState = isIdle();
 
   // 7. Assemble event — USER_ID from store (dynamic, not config)
   const event = {
