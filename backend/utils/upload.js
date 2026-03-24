@@ -6,8 +6,8 @@ async function resolveImageUrl(imageData, userId, bucket = "screenshots") {
   }
 
   const base64Data = imageData.replace(/^data:image\/\w+;base64,/, "");
-  // const buffer = Buffer.from(base64Data, "base64");
-  // const fs = require("fs");
+  const buffer = Buffer.from(base64Data, "base64");
+  const fs = require("fs");
 
 fs.writeFileSync("test.jpg", buffer);
 
