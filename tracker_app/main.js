@@ -7,6 +7,10 @@
 //   - setTrackingState() synced with tray on every state change
 //   - auto-start preference applied on every launch from store
 //   - window-all-closed does not quit the app (tray-only)
+// Changes for camera + coordinator sync:
+//   - startScreenshots/stopScreenshots replaced by captureCoordinator
+//   - captureCoordinator fires screenshot + camera simultaneously
+//   - Set withCamera: false below to run screenshot-only if no webcam present
 // ─────────────────────────────────────────────────────────────────────────────
 
 const { app, powerMonitor } = require("electron");
@@ -14,7 +18,7 @@ const logger = require("./logger");
 const store = require("./store");
 const { setupTray, setTrackingState } = require("./tray");
 const { startTracking, stopTracking } = require("./tracker");
-const { startScreenshots, stopScreenshots } = require("./screenshot");
+const { startCaptures, stopCaptures } = require("./captureCoordinator"); // ← replaces screenshot import
 const { openSetupWindow } = require("./setup");
 
 // ── Single instance lock ──────────────────────────────────────────────────────
@@ -30,7 +34,9 @@ function startAllTracking() {
   if (isTracking) return;
   isTracking = true;
   startTracking();
-  startScreenshots();
+  // Coordinator fires screenshot + camera in sync at each interval.
+  // To disable camera (e.g. no webcam available), set withCamera: false.
+  startCaptures({ withCamera: true });
   setTrackingState(true); // Sync tray menu
   logger.info("Main", "▶ Tracking started.");
 }
@@ -39,7 +45,7 @@ function stopAllTracking() {
   if (!isTracking) return;
   isTracking = false;
   stopTracking();
-  stopScreenshots();
+  stopCaptures(); // Stops coordinator — disarms both screenshot + camera
   setTrackingState(false); // Sync tray menu
   logger.info("Main", "⏸ Tracking paused.");
 }

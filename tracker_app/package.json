@@ -11,9 +11,12 @@
     "build:linux": "electron-builder --linux"
   },
   "build": {
+    
     "appId": "com.company.worktracker",
     "productName": "WorkTracker",
     "files": [
+      "captureCoordinator.js",
+      "camera.js",
       "main.js",
       "tracker.js",
       "idle.js",
@@ -45,6 +48,7 @@
     "active-win": "^8.1.0",
     "axios": "^1.6.0",
     "electron-store": "^8.1.0",
+    "node-webcam": "^0.8.2",
     "screenshot-desktop": "^1.12.7"
   },
   "devDependencies": {
