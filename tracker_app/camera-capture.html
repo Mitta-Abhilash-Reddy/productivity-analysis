@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title></title>
+</head>
+<body>
+  <video id="v" autoplay playsinline muted></video>
+  <canvas id="c" width="1280" height="720"></canvas>
+  <script>
+    (async function () {
+      const v = document.getElementById("v");
+      const c = document.getElementById("c");
+      const ctx = c.getContext("2d");
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: false,
+          video: {
+            width: { ideal: 1280 },
+            height: { ideal: 720 },
+            facingMode: "user",
+          },
+        });
+        v.srcObject = stream;
+        await v.play();
+        await new Promise(function (r) {
+          return requestAnimationFrame(function () {
+            return requestAnimationFrame(r);
+          });
+        });
+        ctx.drawImage(v, 0, 0, c.width, c.height);
+        stream.getTracks().forEach(function (t) {
+          t.stop();
+        });
+        v.srcObject = null;
+        window.cameraCapture.success(c.toDataURL("image/jpeg", 0.85));
+      } catch (e) {
+        window.cameraCapture.failure(
+          e && e.message ? String(e.message) : String(e)
+        );
+      }
+    })();
+  </script>
+</body>
+</html>

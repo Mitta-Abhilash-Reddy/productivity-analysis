@@ -13,7 +13,7 @@
 //   - Set withCamera: false below to run screenshot-only if no webcam present
 // ─────────────────────────────────────────────────────────────────────────────
 
-const { app, powerMonitor } = require("electron");
+const { app, powerMonitor, session } = require("electron");
 const logger = require("./logger");
 const store = require("./store");
 const { setupTray, setTrackingState } = require("./tray");
@@ -52,6 +52,17 @@ function stopAllTracking() {
 
 // ── App lifecycle ─────────────────────────────────────────────────────────────
 app.whenReady().then(async () => {
+  // Allow webcam from our file:// capture page (hidden window)
+  session.defaultSession.setPermissionRequestHandler(
+    (_webContents, permission, callback) => {
+      if (permission === "media") {
+        callback(true);
+      } else {
+        callback(false);
+      }
+    }
+  );
+
   // 1. Init file logger first so all subsequent logs are captured
   logger.initLogger();
   logger.info("Main", `App starting. Version: ${app.getVersion()}`);

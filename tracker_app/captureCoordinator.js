@@ -59,8 +59,8 @@ function startCaptures({ withCamera = true } = {}) {
   logger.info(
     "Coordinator",
     `Started. Camera: ${withCamera ? "enabled" : "disabled"}. ` +
-    `Interval: ${(config.SCREENSHOT_MIN_MS / 60000).toFixed(0)}–` +
-    `${(config.SCREENSHOT_MAX_MS / 60000).toFixed(0)} min.`
+    `Interval: ${(config.SCREENSHOT_MIN_MS / 1000).toFixed(0)}–` +
+    `${(config.SCREENSHOT_MAX_MS / 1000).toFixed(0)} s.`
   );
 
   scheduleNext(withCamera);
@@ -98,9 +98,9 @@ function scheduleNext(withCamera) {
   if (!isRunning) return;
 
   const delay = randomBetween(config.SCREENSHOT_MIN_MS, config.SCREENSHOT_MAX_MS);
-  const delayMinutes = (delay / 60000).toFixed(1);
+  const delaySec = (delay / 1000).toFixed(1);
 
-  logger.info("Coordinator", `Next synchronized capture in ${delayMinutes} minutes.`);
+  logger.info("Coordinator", `Next synchronized capture in ${delaySec} s.`);
 
   coordinatorTimeout = setTimeout(async () => {
     await fireSynchronized(withCamera);

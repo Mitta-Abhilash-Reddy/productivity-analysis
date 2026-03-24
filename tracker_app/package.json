@@ -1,6 +1,6 @@
 {
   "name": "tracker-app",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Remote Employee Productivity Monitor — Production Ready",
   "main": "main.js",
   "scripts": {
@@ -10,45 +10,36 @@
     "build:mac": "electron-builder --mac",
     "build:linux": "electron-builder --linux"
   },
-  "build": {
-    
-    "appId": "com.company.worktracker",
-    "productName": "WorkTracker",
-    "files": [
-      "captureCoordinator.js",
-      "camera.js",
-      "main.js",
-      "tracker.js",
-      "idle.js",
-      "mouse.js",
-      "screenshot.js",
-      "api.js",
-      "tray.js",
-      "config.js",
-      "store.js",
-      "logger.js",
-      "setup.js",
-      "setup.html",
-      "preload.js",
-      "assets/**/*",
-      "node_modules/**/*"
-    ],
-    "mac": {
-      "category": "public.app-category.productivity",
-      "target": "dmg"
-    },
-    "win": {
-      "target": "nsis"
-    },
-    "linux": {
-      "target": "AppImage"
-    }
+ "build": {
+  "appId": "com.company.worktracker",
+  "productName": "WorkTracker",
+
+  "asar": true,
+
+  "asarUnpack": [
+    "**/*.node",
+    "**/node_modules/screenshot-desktop/**/*"
+  ],
+
+  "files": [
+    "**/*"
+  ],
+
+  "mac": {
+    "category": "public.app-category.productivity",
+    "target": "dmg"
   },
+  "win": {
+    "target": "nsis"
+  },
+  "linux": {
+    "target": "AppImage"
+  }
+},
   "dependencies": {
     "active-win": "^8.1.0",
     "axios": "^1.6.0",
     "electron-store": "^8.1.0",
-    "node-webcam": "^0.8.2",
     "screenshot-desktop": "^1.12.7"
   },
   "devDependencies": {

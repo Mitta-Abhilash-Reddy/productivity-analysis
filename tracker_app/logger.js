@@ -21,7 +21,12 @@ let logFileReady = false;
  * Must be called AFTER app.whenReady() so app.getPath() works.
  */
 function initLogger() {
-  if (!config.LOG_TO_FILE) return;
+  // Packaged apps have no DevTools console; always persist logs unless opted out.
+  const enableFile =
+    config.LOG_TO_FILE ||
+    (app.isPackaged && process.env.LOG_TO_FILE !== "false");
+
+  if (!enableFile) return;
 
   try {
     const logsDir = path.join(app.getPath("userData"), "logs");
