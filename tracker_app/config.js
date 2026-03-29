@@ -22,8 +22,8 @@ module.exports = {
 
   // ── API ───────────────────────────────────────────────────────────────────
   // Override via: API_URL=https://api.company.com/track npm start
-  // API_URL: process.env.API_URL || "http://localhost:3000/track",
-  API_URL :"https://productivity-analysis.onrender.com/track",
+  API_URL: process.env.API_URL || "http://localhost:3000/track",
+  // API_URL :"https://productivity-analysis.onrender.com/track",
   API_TIMEOUT_MS: 8000,
   MAX_QUEUE_SIZE: 50,
 

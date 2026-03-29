@@ -8,6 +8,7 @@
 //   - Linux:   ~/.config/tracker-app/config.json
 // ─────────────────────────────────────────────────────────────────────────────
 
+const crypto = require("crypto");
 const Store = require("electron-store");
 
 // ── Schema — validates types and sets defaults ────────────────────────────────
@@ -27,6 +28,10 @@ const schema = {
   setupComplete: {
     type: "boolean",
     default: false,
+  },
+  deviceId: {
+    type: "string",
+    default: "",
   },
 };
 
@@ -71,6 +76,15 @@ function debugDump() {
   return store.store; // Returns full config object
 }
 
+function getOrCreateDeviceId() {
+  let id = store.get("deviceId");
+  if (!id || String(id).trim() === "") {
+    id = crypto.randomUUID();
+    store.set("deviceId", id);
+  }
+  return id;
+}
+
 module.exports = {
   getUserId,
   setUserId,
@@ -81,4 +95,5 @@ module.exports = {
   getAuthToken,
   setAuthToken,
   debugDump,
+  getOrCreateDeviceId,
 };

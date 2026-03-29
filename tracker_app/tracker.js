@@ -22,6 +22,10 @@ const logger = require("./logger");
 // ── Internal state ────────────────────────────────────────────────────────────
 let trackingInterval = null;
 let lastAppName = null;
+/** App currently considered “in focus” for dwell timing */
+let focusApp = null;
+/** When focusApp became active (performance.now()-compatible via Date.now()) */
+let focusStartMs = null;
 
 // ── Public API ────────────────────────────────────────────────────────────────
 
@@ -58,6 +62,8 @@ function stopTracking() {
   }
   stopMouseTracking();
   lastAppName = null;
+  focusApp = null;
+  focusStartMs = null;
   logger.info("Tracker", "Stopped.");
 }
 
@@ -67,6 +73,8 @@ function stopTracking() {
  * Collects one activity snapshot and dispatches it to the API.
  */
 async function collectAndSend() {
+  const now = Date.now();
+
   // 1. Get currently focused window
   const win = await getActiveWindow();
 
@@ -74,26 +82,35 @@ async function collectAndSend() {
   const appName = win?.owner?.name ?? "Unknown";
   const windowTitle = win?.title ?? "Unknown";
 
-  // 3. Detect app switch
+  // 3. Detect app switch (for idle + switch flag)
   const appSwitched = lastAppName !== null && lastAppName !== appName;
   lastAppName = appName;
 
-  // 4. App switch = user is active — reset idle timer
+  // 4. Dwell on current app (ms since this app became focused)
+  if (focusApp !== appName) {
+    focusApp = appName;
+    focusStartMs = now;
+  }
+  const duration =
+    focusStartMs == null ? 0 : Math.max(0, now - focusStartMs);
+
+  // 5. App switch = user is active — reset idle timer
   if (appSwitched) resetIdleTimer();
-// 5. Check idle state
-const idleState = isIdle();
 
-// 6. Flush aggregated mouse data using idle state
-const mouseData = flushMouseData(idleState);
+  // 6. Check idle state
+  const idleState = isIdle();
 
+  // 7. Flush aggregated mouse data using idle state
+  const mouseData = flushMouseData(idleState);
 
-  // 7. Assemble event — USER_ID from store (dynamic, not config)
+  // 8. Assemble event — USER_ID from store (dynamic, not config)
   const event = {
     type: "activity",
     user: store.getUserId(),
     app: appName,
     title: windowTitle,
     timestamp: new Date().toISOString(),
+    duration,
     idle: idleState,
     mouse: mouseData,
     switch: appSwitched,
@@ -101,10 +118,10 @@ const mouseData = flushMouseData(idleState);
 
   logger.info(
     "Tracker",
-    `${appName} | idle=${idleState} | switch=${appSwitched} | clicks=${mouseData.clicks}`
+    `${appName} | idle=${idleState} | switch=${appSwitched} | dur=${duration}ms | clicks=${mouseData.clicks}`
   );
 
-  // 8. Send to API
+  // 9. Send to API
   await sendEvent(event);
 }
 

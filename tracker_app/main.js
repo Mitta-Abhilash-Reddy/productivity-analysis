@@ -20,6 +20,8 @@ const { setupTray, setTrackingState } = require("./tray");
 const { startTracking, stopTracking } = require("./tracker");
 const { startCaptures, stopCaptures } = require("./captureCoordinator"); // ← replaces screenshot import
 const { openSetupWindow } = require("./setup");
+const { startHeartbeat, stopHeartbeat } = require("./heartbeat");
+const { sendSystemInfoOnLaunch } = require("./systemInfo");
 
 // ── Single instance lock ──────────────────────────────────────────────────────
 if (!app.requestSingleInstanceLock()) {
@@ -34,6 +36,7 @@ function startAllTracking() {
   if (isTracking) return;
   isTracking = true;
   startTracking();
+  startHeartbeat();
   // Coordinator fires screenshot + camera in sync at each interval.
   // To disable camera (e.g. no webcam available), set withCamera: false.
   startCaptures({ withCamera: true });
@@ -44,6 +47,7 @@ function startAllTracking() {
 function stopAllTracking() {
   if (!isTracking) return;
   isTracking = false;
+  stopHeartbeat();
   stopTracking();
   stopCaptures(); // Stops coordinator — disarms both screenshot + camera
   setTrackingState(false); // Sync tray menu
@@ -102,7 +106,10 @@ app.whenReady().then(async () => {
     startAllTracking();
   });
 
-  // 7. Begin tracking
+  // 7. Device profile (once per process — not on sleep/resume)
+  sendSystemInfoOnLaunch();
+
+  // 8. Begin tracking
   startAllTracking();
 });
 
